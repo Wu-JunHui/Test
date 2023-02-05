@@ -1,0 +1,15 @@
+/* 全局样式表 */
+html,
+body,
+ul {
+  margin: 0;
+  padding: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+li {
+  list-style: none;
+}
+
