@@ -53,7 +53,7 @@ jobs:
       - name: Sync repo to Gitee
         uses: wearerequired/git-mirror-action@v1
         env:
-          # 在 仓库->Settings->Secrets->Actions 配置私钥，供actions访问github仓库
+          # 在 仓库->Settings->Secrets->Actions 配置私钥，供actions访问github和gitee仓库
           SSH_PRIVATE_KEY: ${{ secrets.GITEE_ED25519_PRIVATE_KEY }}
         with:
           # 注意替换为你的 GitHub 源仓库地址
