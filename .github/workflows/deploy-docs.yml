@@ -5,7 +5,7 @@ name: Deploy Project
 on:
   push:
     branches:
-      # 确保这是你正在使用的分支名称
+      # 触发工作流时的分支
       - main
 
 # jobs 表示将当前“部署文档”工作流的所有任务分组在一起，并定义一个名为 deploy-gh-pages 的任务
@@ -49,3 +49,4 @@ jobs:
           branch: gh-pages
           # 所部署文档的目录
           folder: dist
+
