@@ -5,7 +5,7 @@ name: Deploy Project
 on:
   push:
     branches:
-      # 触发工作流时的分支
+      # 指定通过push触发工作流时的分支
       - main
 
 # jobs 表示将当前“部署文档”工作流的所有任务分组在一起，并定义一个名为 deploy-gh-pages 的任务
@@ -24,25 +24,25 @@ jobs:
           # submodules: true
 
       # 安装指定版本的 Node.js，让后续步骤可使用 npm 和 node 命令
-      - name: install Node.js
+      - name: Install Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
           cache: npm
 
-      - name: 安装依赖
+      - name: Install Dependencies
         # run 表示告诉任务在运行器上执行一个命令
         # npm ci 类似于 npm-install ，但它旨在用于自动化环境，如测试平台，持续集成和部署，比常规安装更严格，项目中必须有package-lock.json
         run: npm ci
 
-      - name: 构建文档
+      - name: Build project
         env:
           NODE_OPTIONS: --max_old_space_size=8192
         run: |-
           npm run build
           > dist/.nojekyll
 
-      - name: 部署文档
+      - name: Deploy project
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           # 这是文档部署到的分支名称
@@ -50,7 +50,7 @@ jobs:
           # 所部署文档的目录
           folder: dist
 
-        - name: 同步仓库至Gitee
+      - name: Sync repo to Gitee
         uses: wearerequired/git-mirror-action@master
         env:
           # 在 GitHub->Settings->Secrets->Actions 配置Actions专用的仓库密匙
@@ -61,7 +61,7 @@ jobs:
           # 注意替换为你的 Gitee 目标仓库地址
           destination-repo: git@gitee.com:W-JunHui/Weather-Forecast.git
 
-        - name: Build Gitee Pages
+      - name: Build Gitee Pages
         uses: yanglbme/gitee-pages-action@main
         with:
           # 注意替换为你的 Gitee 用户名
