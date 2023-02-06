@@ -62,7 +62,7 @@ jobs:
       #     destination-repo: git@gitee.com:W-JunHui/Weather-Forecast.git
 
       - name: Sync repo to Gitee
-        uses: Yikun/hub-mirror-action@v1.1
+        uses: Yikun/hub-mirror-action@master
         with:
           # 源端账户名(github)
           src: github/Wu-JunHui
