@@ -2,8 +2,11 @@
   <div class="contaienr">
     <!-- Banner -->
     <div class="banner-container">
-      <span>Designed by Wu-JunHui</span>
+      <a class="logo" href="https://W-JunHui.gitee.io" target="_blank"> <img src="/logo.svg" alt="OUTOFF ORBIT" /><span>OUTOFF ORBIT</span> </a>
+
+      <div class="statement">Original by <a href="https://github.com/Wu-JunHui" alt="GitHub主页"> Wu-JunHui</a></div>
     </div>
+
     <!-- 主体内容 -->
     <div class="weather-body">
       <!-- Header -->
@@ -11,6 +14,7 @@
         <h2>中国城市天气预报</h2>
         <h5>Urban Weather Forecast in China</h5>
       </div>
+
       <!-- 搜索框 -->
       <div class="search-container">
         <!-- 搜索框 -->
@@ -25,6 +29,7 @@
           <li v-for="(item, index) in defaultCity" @click="getDefaultCity(index)">{{ item }}</li>
         </ul>
       </div>
+
       <!-- 查询结果 -->
       <div class="result-container" v-if="showout">
         <!-- 城市具体结果 -->
@@ -55,17 +60,28 @@
           <!-- 底层信息 -->
           <div class="info-bottom">
             <ul class="buttom-info">
-              <li>相对湿度 {{ todayWea.humidity }}</li>
-              <li>紫外线 {{ todayWea.uvIndex }}级|{{ todayWea.uvDescription }}</li>
-              <li v-if="todayWea.visibility">能见度 {{ todayWea.visibility }}</li>
-              <li>日出：{{ todayWea.sunrise }}</li>
-              <li>日落：{{ todayWea.sunset }}</li>
+              <li>
+                相对湿度 <span>{{ todayWea.humidity }}</span>
+              </li>
+              <li>
+                紫外线 <span>{{ todayWea.uvIndex }}级|{{ todayWea.uvDescription }}</span>
+              </li>
+              <li v-if="todayWea.visibility">
+                能见度 <span>{{ todayWea.visibility }}</span>
+              </li>
+              <li>
+                日出 <span>{{ todayWea.sunrise }}</span>
+              </li>
+              <li>
+                日落 <span>{{ todayWea.sunset }}</span>
+              </li>
             </ul>
           </div>
         </el-card>
+
         <!-- 七天预报 -->
         <div class="sevens-container">
-          <div style="margin-bottom: 10px">未来七天预报</div>
+          <div class="title">未来七天预报</div>
           <ul class="forecast-container">
             <el-card shadow="hover" v-for="item in cityResult" :key="item.date">
               <div>{{ item.date }}</div>
@@ -86,18 +102,18 @@
         </div>
       </div>
     </div>
+
     <!-- footer -->
-    <div class="footer-container" v-if="showout">
-      <div class="img"></div>
-      <span>Don't have a good day, have a great day.</span>
-    </div>
+    <Footer v-if="showout"></Footer>
   </div>
   <!-- 1.通过IP地址获取城市   2.移动端适配 -->
 </template>
 
 <script>
 import cityname from './cityname'
+import Footer from './components/Footer.vue'
 export default {
+  components: { Footer },
   mounted() {
     //获取meta节点
     let metaNode = document.querySelector('meta[name=viewport]')
@@ -263,7 +279,8 @@ export default {
   src: url('./assets/iconfont.ttf') format('truetype');
 }
 // 定义信息面板字体颜色
-@infoColor:#a0f6aa;
+@infoColor: #a0f6aa;
+@fontFamliy: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', STHeiti, 'Microsoft YaHei', SimSun, sans-serif;
 // .container {
 //   padding-right: 15px;
 //   padding-left: 15px;
@@ -294,17 +311,37 @@ export default {
 //     font-size: 16px;
 //   }
 // }
+
+// banner
 .banner-container {
-  padding: 0 20px;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   width: 100%;
-  height: 40px;
-  line-height: 40px;
-  text-align: right;
+  height: 50px;
   color: #fff;
-  background: rgb(119, 190, 184);
   background: linear-gradient(90deg, rgba(119, 190, 184, 1) 0%, rgba(109, 141, 192, 1) 100%);
+
+  .logo {
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    color: #0b0b0b;
+    font-size: 22px;
+    font-weight: 500;
+    img {
+      width: 60px;
+    }
+  }
+  .statement a {
+    color: #37e0b9;
+    cursor: default;
+
+  }
 }
 
+// 主体内容
 .weather-body {
   margin: 0 auto;
   padding: 50px 20px;
@@ -422,9 +459,9 @@ export default {
       margin-right: 20px;
       font-size: 25px;
     }
-    .today span{
-        color: @infoColor;
-      }
+    .today span {
+      color: @infoColor;
+    }
   }
   .right {
     span {
@@ -493,13 +530,23 @@ export default {
 
 // 信息面板底层
 .info-bottom {
-  li {
-    // float: left;
-    margin-right: 16px;
+  ul {
+    display: flex;
+    li {
+      margin-right: 16px;
+      span {
+        color: @infoColor;
+      }
+    }
   }
 }
 // 七天预报
 .sevens-container {
+  .title {
+    margin-bottom: 15px;
+    color: #54a1a1;
+    font-size: 20px;
+  }
   ul {
     display: flex;
     height: 100%;
@@ -535,25 +582,4 @@ export default {
   }
 }
 // footer
-.footer-container {
-  margin-top: 80px;
-  padding: 20px;
-  width: 100%;
-  height: 100px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  background: rgb(109, 141, 192);
-  background: linear-gradient(90deg, rgba(109, 141, 192, 1) 0%, rgba(119, 190, 184, 1) 100%);
-  .img {
-    margin-right: 20px;
-    width: 60px;
-    height: 60px;
-    background-color: #fff;
-    border-radius: 30px;
-    background: url(./assets/doggy.jpg) no-repeat;
-    background-size: contain;
-  }
-}
 </style>

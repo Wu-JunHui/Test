@@ -1,4 +1,3 @@
-# 工作流名称，会出现在 GitHub 仓库的 Actions 选项栏中
 name: Deploy Project
 
 # 指定工作流的触发事件，此处为 push 事件，表示在本地 push 指定分支至 github 仓库时触发工作流
@@ -45,9 +44,9 @@ jobs:
       - name: Deploy project
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          # 这是文档部署到的分支名称
+          # 这是项目部署到的分支名称
           branch: gh-pages
-          # 所部署文档的目录
+          # 所部署项目的目录
           folder: dist
 
       - name: Sync repo to Gitee
@@ -60,31 +59,6 @@ jobs:
           source-repo: git@github.com:Wu-JunHui/Weather-Forecast.git
           # 注意替换为你的 Gitee 目标仓库地址
           destination-repo: git@gitee.com:W-JunHui/Weather-Forecast.git
-
-      # - name: Sync repo to Gitee
-      #   uses: Yikun/hub-mirror-action@master
-      #   with:
-      #     # 源端账户名(github)
-      #     src: github/Wu-JunHui
-      #     # 目的端账户名(gitee)
-      #     dst: gitee/W-JunHui
-      #     # 配置于GitHub源仓库Setting/Secrets/Actions的私钥
-      #     dst_key: ${{ secrets.GITEE_ED25519_PRIVATE_KEY }}
-      #     # 配置于GitHub源仓库Setting/Secrets/Actions的Gitee账户私人令牌
-      #     # 用于在同步时自动创建不存在的仓库（依据token调用创建仓库的API）
-      #     dst_token:  ${{ secrets.GITEE_TOKEN }}
-      #     # 账户类型(普通用户)
-      #     account_type: user
-      #     # 仓库克隆方式，可选值：https、ssh（需将dst_key所对应的公钥同时配置到源端和目的端）
-      #     clone_style: "ssh"
-      #     # 启用后会显示所有执行命令（debug 日志开关）
-      #     debug: true
-      #     # 启用后，强制覆盖更新目的端仓库
-      #     force_update: true
-      #     # 源端仓库静态同步列表，不会动态获取源端github的所有repos，仅同步列表项仓库
-      #     static_list: "Weather Forecast"
-      #     # git超时设置，超时后会自动重试git操作
-      #     timeout: '600s'    
 
       - name: Build Gitee Pages
         uses: yanglbme/gitee-pages-action@main
