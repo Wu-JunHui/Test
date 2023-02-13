@@ -19,8 +19,8 @@ This is a Web application that provides a one-week weather forecasts for cities 
 
 ### Techniques
 
-（1）A Vue 3 project built by [Vite](https://cn.vitejs.dev/)  
-（2）Organized the UI interface by using [Element Plus](https://element-plus.gitee.io/zh-CN/), and deconstructed it by three components: `CityPanel.vue`、`Days.vue`、`Footer.vue`. Enable the responsive layout by using `media query`.  
+（1）A Vue 3 project built by [Vite](https://cn.vitejs.dev/).  
+（2）Organized the UI interface by using [Element Plus](https://element-plus.gitee.io/zh-CN/) and deconstructed it by three components: `CityPanel.vue`、`Days.vue`、`Footer.vue`. Enable the responsive layout by using `media query`.  
 （3）By comparing the city suffixes ('市', '县', '自治州', '岛'), the legal city name is determined to be a request parameter. To make the request easier, I set the `Axios` as the Vue global property `$http`，and request/response interceptor is also set at the same time.  
 （4）Used the `Less` to write the styles and applyed some icons from [阿里巴巴矢量图标库](https://www.iconfont.cn/)
 
