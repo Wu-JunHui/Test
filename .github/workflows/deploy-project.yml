@@ -1,28 +1,20 @@
 name: Deploy Project
 
-# 指定工作流的触发事件，此处为 push 事件，表示在本地 push 指定分支至 github 仓库时触发工作流
 on:
   push:
     branches:
       # 指定通过push触发工作流时的分支
       - main
 
-# jobs 表示将当前“部署文档”工作流的所有任务分组在一起，并定义一个名为 deploy-gh-pages 的任务
 jobs:
   deploy-gh-pages:
-    # 配置任务运行在最新的 Ubuntu Linux 运行器
     runs-on: ubuntu-latest
-    # steps 表示将 deploy-gh-pages 任务下的所有步骤分为一组，嵌套的每一个条目都是一个独立的 action 或者 shell 脚本
     steps:
       - name: Checkout
-        # uses 表示当前步骤使用 actions/checkout 动作的v3大版本 ，这是一个可以检出仓库代码到运行器的动作，它允许你运行脚本或者其他动作侵入你的代码（比如构建或者测试工具）
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          # 如果你文档需要 Git 子模块，取消注释下一行
-          # submodules: true
 
-      # 安装指定版本的 Node.js，让后续步骤可使用 npm 和 node 命令
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
@@ -30,8 +22,6 @@ jobs:
           cache: npm
 
       - name: Install Dependencies
-        # run 表示告诉任务在运行器上执行一个命令
-        # npm ci 类似于 npm-install ，但它旨在用于自动化环境，如测试平台，持续集成和部署，比常规安装更严格，项目中必须有package-lock.json
         run: npm ci
 
       - name: Build project
@@ -40,6 +30,22 @@ jobs:
         run: |-
           npm run build
           > dist/.nojekyll
+
+      - name: Copy LICENSE
+        uses: canastro/copy-file-action@master
+        with:
+          # 源文件目录
+          source: LICENSE
+          # 目标目录
+          target: dist
+
+      - name: Copy README.md
+        uses: canastro/copy-file-action@master
+        with:
+          # 源文件目录
+          source: README.md
+          # 目标目录
+          target: dist
 
       - name: Deploy project
         uses: JamesIves/github-pages-deploy-action@v4

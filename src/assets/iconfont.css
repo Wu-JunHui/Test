@@ -1,23 +1,72 @@
 @font-face {
-  font-family: "iconfont"; /* Project id 3881081 */
-  src: url('iconfont.woff2?t=1675611087867') format('woff2'),
-       url('iconfont.woff?t=1675611087867') format('woff'),
-       url('iconfont.ttf?t=1675611087867') format('truetype');
+  font-family: 'iconfont'; /* Project id 3881081 */
+  src: url('./iconfont.ttf') format('truetype');
 }
 
 .iconfont {
-  font-family: "iconfont" !important;
+  font-family: 'iconfont' !important;
   font-size: 16px;
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-sunsetrila:before {
+  content: '\e6e8';
+}
+
+.icon-sunsetrila-copy:before {
+  content: '\ea14';
+}
+
+.icon-sunriserichu:before {
+  content: '\e6e7';
+}
+
+.icon-sunriserichu-copy:before {
+  content: '\ea15';
+}
+
+.icon-fengli-copy:before {
+  content: '\ea12';
+}
+
+.icon-fengli:before {
+  content: '\e65b';
+}
+
+.icon-shidu:before {
+  content: '\e60f';
+}
+
+.icon-browse:before {
+  content: '\e6e0';
+}
+
+.icon-quancangziwaixianshajun:before {
+  content: '\e611';
+}
+
+.icon-browse-copy:before {
+  content: '\ea13';
+}
+
+.icon-shidu-copy:before {
+  content: '\ea11';
+}
+
+.icon-mail02:before {
+  content: '\e640';
+}
+
+.icon-GitHub:before {
+  content: '\ea0a';
+}
+
+.icon-gitee:before {
+  content: '\e60c';
+}
+
 .icon-chakan-copy:before {
-  content: "\e64e";
+  content: '\e64e';
 }
-
-.icon-chakan:before {
-  content: "\e64d";
-}
-

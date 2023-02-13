@@ -3,7 +3,6 @@
     <!-- Banner -->
     <div class="banner-container">
       <a class="logo" href="https://W-JunHui.gitee.io" target="_blank"> <img src="/logo.svg" alt="OUTOFF ORBIT" /><span>OUTOFF ORBIT</span> </a>
-
       <div class="statement">Original by <a href="https://github.com/Wu-JunHui" alt="GitHub主页"> Wu-JunHui</a></div>
     </div>
 
@@ -32,179 +31,109 @@
 
       <!-- 查询结果 -->
       <div class="result-container" v-if="showout">
-        <!-- 城市具体结果 -->
-        <el-card shadow="hover" class="city-container">
-          <!-- 顶层信息 -->
-          <div class="info-top">
-            <div class="left">
-              <span class="cityname">{{ city }}</span>
-              <span class="today"
-                >今天：<span>{{ todayWea.wea }} {{ todayWea.tem2 }}°~{{ todayWea.tem1 }}° </span>
-              </span>
-            </div>
-            <div class="right">
-              <span>{{ todayWea.date }}</span>
-              <span>{{ todayWea.week }}</span>
-            </div>
-          </div>
-          <!-- 中层信息 -->
-          <div class="info-middle">
-            <div class="temperature">{{ todayWea.tem }}°</div>
-            <div class="airquality" ref="airRef">
-              <span> {{ todayWea.air }} </span>
-              <div :class="unmiddle ? 'unmiddle' : 'shuxian'">|</div>
-              <span>{{ todayWea.air_level }}</span>
-            </div>
-            <div class="windinfo">{{ todaywin }} | {{ todayWea.win_meter }} {{ todayWea.win_speed }}</div>
-          </div>
-          <!-- 底层信息 -->
-          <div class="info-bottom">
-            <ul class="buttom-info">
-              <li>
-                相对湿度 <span>{{ todayWea.humidity }}</span>
-              </li>
-              <li>
-                紫外线 <span>{{ todayWea.uvIndex }}级|{{ todayWea.uvDescription }}</span>
-              </li>
-              <li v-if="todayWea.visibility">
-                能见度 <span>{{ todayWea.visibility }}</span>
-              </li>
-              <li>
-                日出 <span>{{ todayWea.sunrise }}</span>
-              </li>
-              <li>
-                日落 <span>{{ todayWea.sunset }}</span>
-              </li>
-            </ul>
-          </div>
-        </el-card>
+        <!-- 城市面板 -->
+        <div class="panel-container">
+          <CityPanel :todayArr="todayWea" :cityName="city" bgColor="linear-gradient(90deg, rgba(119, 190, 184, 1) 0%, rgba(214, 149, 143, 1) 100%)" fontColor="#fff"></CityPanel>
+        </div>
 
         <!-- 七天预报 -->
         <div class="sevens-container">
-          <div class="title">未来七天预报</div>
-          <ul class="forecast-container">
-            <el-card shadow="hover" v-for="item in cityResult" :key="item.date">
-              <div>{{ item.date }}</div>
-              <div>{{ item.week }}</div>
-              <div>{{ item.wea }}</div>
-              <div><span class="pic" :ref="el => this.weaArr.push(el)"></span></div>
-              <div>{{ item.tem1 }}°</div>
-              <div>{{ item.tem2 }}°</div>
-              <div>{{ item.win[0] }}</div>
-              <div>{{ item.win_speed }}</div>
-              <div>空气质量{{ item.air }}</div>
-              <div class="airquali">
-                <span :ref="el => this.airArr.push(el)">{{ item.air_level }}</span>
-              </div>
-              <div>UV {{ item.uvIndex }}级|{{ item.uvDescription }}</div>
-            </el-card>
-          </ul>
+          <Days :dataArr="cityResult" @sendRef="getSevenRef"></Days>
         </div>
       </div>
     </div>
 
     <!-- footer -->
-    <Footer v-if="showout"></Footer>
+    <div class="footer-container" v-if="showout">
+      <Footer bgColor="linear-gradient(90deg, rgba(109, 141, 192, 1) 0%, rgba(119, 190, 184, 1) 100%)" fontColor="#fff" message="Don't have a good day, have a great day." GHRepo="https://github.com/Wu-JunHui/Weather-Forecast" GERepo="https://gitee.com/W-JunHui/Weather-Forecast"></Footer>
+    </div>
   </div>
-  <!-- 1.通过IP地址获取城市   2.移动端适配 -->
 </template>
 
 <script>
+// 导入包含城市名数组的js文件
 import cityname from './cityname'
 import Footer from './components/Footer.vue'
+import CityPanel from './components/CityPanel.vue'
+import Days from './components/Days.vue'
+
 export default {
-  components: { Footer },
-  mounted() {
-    //获取meta节点
-    let metaNode = document.querySelector('meta[name=viewport]')
-
-    //定义设计稿宽度为375
-    let designWidth = 375
-
-    //计算当前屏幕的宽度与设计稿比例
-    let scale = document.documentElement.clientWidth / designWidth
-
-    //通过设置meta元素中content的initial-scale值达到移动端适配
-    metaNode.content = 'initial-scale=' + scale + ',minimum-scale=' + scale + ',maximum-scale=' + scale + ',user-scalable=no'
-  },
+  components: { Footer, CityPanel, Days },
   data() {
     return {
       inputCity: '',
       defaultCity: ['北京', '上海', '广州', '深圳', '成都', '重庆', '西安'],
-      cityResult: [], // 返回城市七天天气数组
-      city: '',
       todayWea: {}, // 根据今天的时间选出今天的天气对象
-      todaywin: '',
-      unmiddle: false,
-      airArr: [],
-      weaArr: [],
-      showout: false
+      city: '', // 所查询城市名
+      cityResult: [], // 返回城市七天天气数组
+      showout: false,
+      airRefArr: [], // 接收通过自定义事件传递的七天天气空气指数ref引用的数组（Vue3函数式ref）
+      weaRefArr: [] // 接收通过自定义事件传递的七天天气小图标ref引用的数组（Vue3函数式ref）
     }
   },
 
   methods: {
+    // 封装请求函数
     async getWeather() {
-      // 判断是否为合法城市名
+      // 基于城市名模块，判断所输入是否为合法城市名
       let legalname = cityname.some(item => {
+        // 因为城市名模块均带有后缀，因此需手动添加后缀以判断是否合法
         let suffix = ['市', '县', '自治州', '岛']
         return item === this.inputCity || suffix.some(ele => this.inputCity + ele === item)
       })
       if (legalname) {
-        // 将城市后缀去除
+        // 将城市后缀去除，因为接口请求参数不能有后缀
         let re = /市|县|自治州|岛$/
         let newStr = this.inputCity.replace(re, '')
-
-        // 让v-if创建展示结果的节点，有了模板结构，后续关于数据的一切操作才不会报错
-        // 如果是v-show则可以基于返回的结果作为判断
-        this.showout = true
 
         // 使用无后缀城市名发起请求
         const res = await this.$http.get('https://v0.yiketianqi.com/api?unescape=1&version=v91&appid=43656176&appsecret=I42og6Lm&ext=&cityid=&city=' + newStr)
         if (res.status !== 200) return alert('查询失败')
         this.cityResult = res.data.data
         this.city = res.data.city
-        // 根据日期获取今天的数据
+
+        // 根据日期获取今天的数据对象
         res.data.data.some(item => {
           if (item.date === this.today) {
             this.todayWea = item
           }
         })
-        // 判断空气质量的竖线是否居中
-        if (this.todayWea.air_level.length === 4) {
-          this.unmiddle = true
-        } else {
-          this.unmiddle = false
-        }
 
-        // 根据空气质量质数设置空气背景颜色
-        let airnum = this.todayWea.air
-        let airref = this.$refs.airRef
-        this.getAirBgc(airnum, airref)
+        // 返回数据成功，则使用v-if创建展示结果的DOM节点，后续关于天气数据的一切操作才不会报错
+        // 必须在已获取所有基础数组、对象后才创建通过v-if创建DOM节点，否则在父向子传值时会产生空数组、空对象导致错误
+        // 如果使用v-show则可以基于接口请求返回的结果作为判断条件
+        this.showout = true
 
-        // 获取风速数组数据
-        this.todaywin = this.todayWea.win[0]
-
-        // 要每次页面更新数据后，基于数据重新设置空气质量颜色和天气图标
-        // 此步骤不应在生命周期函数updated中进行，它是一有数据变更就执行
+        // 每次请求新数据成功后，需重新设置空气质量颜色和天气图标
+        // 此步骤不应在生命周期函数updated中进行，它是一有数据变更就执行，也可使用侦听器watch实现
         this.$nextTick(() => {
-          // 循环数组根据七天预报空气指数设置背景颜色
+          // 循环七天天气数组，根据每天的空气指数设置对应背景颜色
           for (let i = 0; i < this.cityResult.length; i++) {
-            this.getAirBgc(this.cityResult[i].air, this.airArr[i])
+            this.getAirBgc(this.cityResult[i].air, this.airRefArr[i])
           }
+          // 循环七天天气数组，根据每天的预报设置天气小图标
           for (let i = 0; i < this.cityResult.length; i++) {
-            this.getWeaImg(this.cityResult[i].wea, this.weaArr[i])
+            this.getWeaImg(this.cityResult[i].wea, this.weaRefArr[i])
           }
         })
       } else {
         this.$message.warning('请输入合法城市名')
       }
     },
+
     // 点击默认城市天气
     getDefaultCity(index) {
       this.inputCity = this.defaultCity[index]
       this.getWeather()
     },
-    // 封装空气质量指数背景色函数
+
+    // 监听子组件Days的自定义函数，接收空气指数和天气图标的ref引用
+    getSevenRef(Obj) {
+      this.airRefArr = Obj.sevensAir
+      this.weaRefArr = Obj.sevensWea
+    },
+
+    // 封装空气质量指数背景色函数（面板和七天都有使用）
     getAirBgc(airnum, ref) {
       if (airnum <= 50) {
         ref.style.backgroundColor = '#4a8747'
@@ -220,6 +149,8 @@ export default {
         ref.style.backgroundColor = '#6a0e24'
       }
     },
+
+    // 封装设置七天天气图标函数
     getWeaImg(weastr, ref) {
       if (weastr === '晴' || weastr.indexOf('晴') === 0) {
         ref.style.backgroundPosition = '-131px -6px'
@@ -273,44 +204,14 @@ export default {
 }
 </script>
 
-<style scoped lang="less">
+<style lang="less">
 @font-face {
   font-family: 'iconfont';
   src: url('./assets/iconfont.ttf') format('truetype');
 }
 // 定义信息面板字体颜色
-@infoColor: #a0f6aa;
+
 @fontFamliy: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', STHeiti, 'Microsoft YaHei', SimSun, sans-serif;
-// .container {
-//   padding-right: 15px;
-//   padding-left: 15px;
-//   margin-right: auto;
-//   margin-left: auto;
-// }
-// @media (min-width: 768px) {
-//   // .container {
-//   //   width: 750px;
-//   // }
-//   html {
-//     font-size: 118px;
-//   }
-// }
-// @media (min-width: 992px) {
-//   // .container {
-//   //   width: 970px;
-//   // }
-//   html {
-//     font-size: 16px;
-//   }
-// }
-// @media (min-width: 1200px) {
-//   // .container {
-//   //   width: 1170px;
-//   // }
-//   html {
-//     font-size: 16px;
-//   }
-// }
 
 // banner
 .banner-container {
@@ -337,7 +238,15 @@ export default {
   .statement a {
     color: #37e0b9;
     cursor: default;
-
+  }
+  @media screen and (max-width: 600px) {
+    // 隐藏logo名字
+    .logo span {
+      display: none;
+    }
+    .statement {
+      font-size: 14px;
+    }
   }
 }
 
@@ -345,14 +254,14 @@ export default {
 .weather-body {
   margin: 0 auto;
   padding: 50px 20px;
-  max-width: 800px;
+  max-width: 900px;
 }
 
 // 标题栏
 .header-container {
   margin-bottom: 30px;
   text-align: center;
-
+  cursor: default;
   h2 {
     margin: 20px auto 5px;
     font-size: 30px;
@@ -364,7 +273,7 @@ export default {
     margin: 0;
     font-weight: 400;
     color: #0d96a0;
-    letter-spacing: 0.125rem;
+    letter-spacing: 2px;
     word-spacing: 5px;
   }
 }
@@ -392,18 +301,22 @@ export default {
     float: left;
     width: 10%;
     height: 100%;
-    /* background-color: #000; */
     color: #fff;
-    // background: url('./assets/look.svg') no-repeat;
-    // background-size: contain;
   }
   button::before {
     font-family: 'iconfont';
     content: '\e64e';
   }
   button:hover {
-    // transition: all 0.2s;
     color: #6d8ec0;
+  }
+  @media screen and (max-width: 600px) {
+    .el-input {
+      width: 83%;
+    }
+    button {
+      width: 15%;
+    }
   }
 }
 
@@ -432,154 +345,15 @@ export default {
   width: 100%;
   cursor: default;
 
-  // 信息面板
-  .city-container {
-    width: 100%;
-    color: #fff;
-    background: rgb(119, 190, 184);
-    background: linear-gradient(90deg, rgba(119, 190, 184, 1) 0%, rgba(214, 149, 143, 1) 100%);
-  }
   // 七天预报
   .sevens-container {
     margin-top: 50px;
     width: 100%;
-    height: 300px;
   }
-}
-// 信息面板顶层
-.info-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  .left {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    .cityname {
-      margin-right: 20px;
-      font-size: 25px;
-    }
-    .today span {
-      color: @infoColor;
-    }
-  }
-  .right {
-    span {
-      padding-right: 10px;
-      font-size: 14px;
-    }
-  }
-}
-// @media (min-width: 375px) {
-//  .info-top{
-//   flex-direction: column;
-//  }
-// }
-// 信息面板中层
-.info-middle {
-  position: relative;
-  .temperature {
-    font-size: 60px;
-  }
-  // .subsidiary {
-  //   position: absolute;
-  //   // margin-left: 50px;
-  //   top: 20px;
-  //   left: 100px;
-
-  // 空气质量指标
-  .airquality {
-    position: absolute;
-    top: 20px;
-    left: 100px;
-    padding: 0 10px;
-    display: flex;
-    height: 20px;
-    line-height: 20px;
-    // background-color: green;
-    border-radius: 10px;
-    font-size: 12px;
-    // justify-content: space-evenly;
-    // text-align: center;
-    flex-wrap: nowrap;
-    .shuxian {
-      position: absolute;
-      top: 0;
-      left: 50%;
-    }
-    .unmiddle {
-      position: absolute;
-      top: 0;
-      left: 36%;
-    }
-    span {
-      flex: 1;
-      text-align: center;
-      padding: 0 5px;
-      white-space: nowrap;
-    }
-  }
-  .windinfo {
-    position: absolute;
-    // margin-left: 50px;
-    top: 47px;
-    left: 100px;
-  }
-  // }
 }
 
-// 信息面板底层
-.info-bottom {
-  ul {
-    display: flex;
-    li {
-      margin-right: 16px;
-      span {
-        color: @infoColor;
-      }
-    }
-  }
-}
-// 七天预报
-.sevens-container {
-  .title {
-    margin-bottom: 15px;
-    color: #54a1a1;
-    font-size: 20px;
-  }
-  ul {
-    display: flex;
-    height: 100%;
-    font-size: 10px;
-
-    .el-card {
-      --el-card-padding: 10px;
-      flex: 1;
-      height: 100%;
-      text-align: center;
-      background-color: #fff;
-
-      div {
-        margin-bottom: 8px;
-        .pic {
-          display: block;
-          margin: auto;
-          width: 48px;
-          height: 40px;
-          background: url(./assets/weatherIcon.png) no-repeat -131px -6px;
-          background-size: 250px auto;
-        }
-      }
-      .airquali {
-        span {
-          padding: 0 10px;
-          background-color: green;
-          border-radius: 20px;
-          color: #fff;
-        }
-      }
-    }
-  }
-}
 // footer
+.footer-container {
+  margin-top: 50px;
+}
 </style>
