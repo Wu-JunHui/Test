@@ -125,6 +125,7 @@ export default {
   }
   // 信息面板中层
   .info-middle {
+    margin: 10px 0;
     display: flex;
     .middle-left {
       font-size: 60px;
@@ -201,8 +202,10 @@ export default {
     div:nth-child(5):before {
       content: '\ea14';
     }
-
-    @media screen and (max-width: 750px) {
+  }
+  @media screen and (max-width: 750px) {
+    .info-bottom {
+      justify-content: space-evenly;
       div {
         flex-direction: column;
         align-items: center;
@@ -217,7 +220,6 @@ export default {
       div:nth-child(5) {
         margin: 0;
       }
-
       div::before {
         margin-right: 0;
         font-size: 24px;
