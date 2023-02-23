@@ -191,18 +191,21 @@ export default {
       border-radius: 24px;
     }
   }
-  .footer-root .multiple2 .brand2 {
-    font-size: 16px;
+  .footer-root .multiple2 {
+    justify-content: space-between;
+    .brand2 {
+      font-size: 16px;
 
-    img {
-      width: 80px;
+      img {
+        width: 80px;
+      }
     }
-  }
-  .footer-root .multiple2 .links2 {
-    width: 60%;
-    padding-left: 10px;
-    .copyright {
-      font-size: 8px;
+    .links2 {
+      width: 60%;
+      padding-left: 10px;
+      .copyright {
+        font-size: 8px;
+      }
     }
   }
 }

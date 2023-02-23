@@ -2,8 +2,8 @@
   <div class="contaienr">
     <!-- Banner -->
     <div class="banner-container">
-      <a class="logo" href="https://W-JunHui.gitee.io" target="_blank"> <img src="/logo.svg" alt="OUTOFF ORBIT" /><span>OUTOFF ORBIT</span> </a>
-      <div class="statement">Original by <a href="https://github.com/Wu-JunHui" alt="GitHub主页"> Wu-JunHui</a></div>
+      <a class="logo" href="https://w-junhui.gitee.io/weather-forecast" > <img src="/logo.svg" alt="OUTOFF ORBIT" /><span>OUTOFF ORBIT</span> </a>
+      <div class="statement">Original by <a href="https://github.com/Wu-JunHui" alt="GitHub主页" target="_blank"> Wu-JunHui</a></div>
     </div>
 
     <!-- 主体内容 -->
@@ -211,8 +211,6 @@ export default {
 }
 // 定义信息面板字体颜色
 
-@fontFamliy: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', STHeiti, 'Microsoft YaHei', SimSun, sans-serif;
-
 // banner
 .banner-container {
   padding: 10px 20px;
@@ -235,9 +233,12 @@ export default {
       width: 60px;
     }
   }
-  .statement a {
-    color: #37e0b9;
+  .statement {
     cursor: default;
+    a {
+      color: #37e0b9;
+      cursor: pointer;
+    }
   }
   @media screen and (max-width: 600px) {
     // 隐藏logo名字
